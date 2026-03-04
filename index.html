@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Registration</title>
+</head>
+
+<body>
+
+<h2>Student Registration</h2>
+
+<form id="form">
+
+<input type="text" id="name" placeholder="Name"><br><br>
+
+<input type="email" id="email" placeholder="Email"><br><br>
+
+<input type="date" id="dob"><br><br>
+
+<input type="text" id="department" placeholder="Department"><br><br>
+
+<input type="text" id="phone" placeholder="Phone"><br><br>
+
+<button type="submit">Register</button>
+
+</form>
+
+<script>
+
+document.getElementById("form").addEventListener("submit",async function(e){
+
+e.preventDefault();
+
+const data={
+name:document.getElementById("name").value,
+email:document.getElementById("email").value,
+dob:document.getElementById("dob").value,
+department:document.getElementById("department").value,
+phone:document.getElementById("phone").value
+};
+
+await fetch("http://localhost:3000/register",{
+method:"POST",
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify(data)
+});
+
+alert("Student Registered");
+
+});
+
+</script>
+
+</body>
+</html>
