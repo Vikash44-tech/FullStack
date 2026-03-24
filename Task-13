@@ -1,0 +1,152 @@
+PROGRAM:
+STEP 1: Create Spring Boot Project
+Use Spring Boot
+Add Dependencies:
+Spring Web
+Spring Data JPA
+Validation (jakarta.validation)
+Lombok (optional)
+H2 / MySQL Driver
+
+STEP 2: Create Entity Class
+User.java
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+
+@Entity
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank(message = "Name cannot be empty")
+    private String name;
+
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email cannot be empty")
+    private String email;
+
+    @Min(value = 18, message = "Age must be at least 18")
+    private int age;
+
+    // Getters and Setters
+}
+STEP 3: Create Repository
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+}
+
+ STEP 4: Create Custom Exception
+ResourceNotFoundException.java
+public class ResourceNotFoundException extends RuntimeException {
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+
+STEP 5: Create Service Layer
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository repository;
+
+    public User saveUser(User user) {
+        return repository.save(user);
+    }
+
+    public User getUser(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with id: " + id));
+    }
+}
+
+STEP 6: Create REST Controller
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    @Autowired
+    private UserService service;
+
+    @PostMapping
+    public User createUser(@Valid @RequestBody User user) {
+        return service.saveUser(user);
+    }
+
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) {
+        return service.getUser(id);
+    }
+}
+ Important:
+ @Valid automatically triggers validation
+ If validation fails → exception is thrown
+ STEP 7: Global Exception Handling
+GlobalExceptionHandler.java
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    1. Handle custom exception
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNotFound(ResourceNotFoundException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message", ex.getMessage());
+        return error;
+    }
+
+    2. Handle validation errors
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidation(MethodArgumentNotValidException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage())
+        );
+
+        return errors;
+    }
+
+    3. Handle generic exception
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleGeneric(Exception ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message", "Something went wrong");
+        return error;
+    }
+}
+
+STEP 8: Testing (POST API)
+Valid Input:
+{
+  "name": "John",
+  "email": "john@gmail.com",
+  "age": 25
+} Invalid Input:
+{
+  "name": "",
+  "email": "wrong",
+  "age": 15
+}
