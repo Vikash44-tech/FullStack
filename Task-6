@@ -1,0 +1,57 @@
+task-6 Automated logging using triggers and views
+
+CREATE DATABASE audit_system;
+
+USE audit_system;
+
+CREATE TABLE employees (
+    emp_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    department VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+CREATE TABLE employee_logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_id INT,
+    action_type VARCHAR(20),
+    action_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+DELIMITER $$
+
+CREATE TRIGGER after_employee_insert
+AFTER INSERT ON employees
+FOR EACH ROW
+BEGIN
+    INSERT INTO employee_logs (emp_id, action_type)
+    VALUES (NEW.emp_id, 'INSERT');
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER after_employee_update
+AFTER UPDATE ON employees
+FOR EACH ROW
+BEGIN
+    INSERT INTO employee_logs (emp_id, action_type)
+    VALUES (NEW.emp_id, 'UPDATE');
+END$$
+
+DELIMITER ;
+
+INSERT INTO employees (name, department, salary)
+VALUES ('Ashok', 'IT', 40000);
+
+UPDATE employees
+SET salary = 45000
+WHERE emp_id = 1;
+
+CREATE VIEW daily_activity_report AS
+SELECT emp_id, action_type, action_time
+FROM employee_logs
+WHERE DATE(action_time) = CURDATE();
+
+SELECT * FROM daily_activity_report;
