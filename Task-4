@@ -1,0 +1,67 @@
+task-4 order management using joins
+
+CREATE DATABASE order_management;
+
+USE order_management;
+
+CREATE TABLE customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    city VARCHAR(50)
+);
+
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(100),
+    price DECIMAL(10,2)
+);
+
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    product_id INT,
+    quantity INT,
+    order_date DATE,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+INSERT INTO customers (name, email, city) VALUES
+('Ashok', 'ashok@gmail.com', 'Chennai'),
+('Rahul', 'rahul@gmail.com', 'Hyderabad'),
+('Priya', 'priya@gmail.com', 'Bangalore');
+
+INSERT INTO products (product_name, price) VALUES
+('Laptop', 50000),
+('Mobile', 20000),
+('Headphones', 2000);
+
+INSERT INTO orders (customer_id, product_id, quantity, order_date) VALUES
+(1, 1, 1, '2025-03-01'),
+(1, 2, 2, '2025-03-02'),
+(2, 3, 3, '2025-03-03'),
+(3, 2, 1, '2025-03-04');
+
+SELECT customers.name, products.product_name, orders.quantity, products.price, orders.order_date
+FROM orders
+JOIN customers ON orders.customer_id = customers.customer_id
+JOIN products ON orders.product_id = products.product_id
+ORDER BY orders.order_date;
+
+SELECT * FROM orders
+WHERE quantity * (SELECT price FROM products WHERE products.product_id = orders.product_id)
+=
+(SELECT MAX(quantity * price)
+ FROM orders
+ JOIN products ON orders.product_id = products.product_id);
+
+SELECT name FROM customers
+WHERE customer_id =
+(
+    SELECT customer_id
+    FROM orders
+    GROUP BY customer_id
+    ORDER BY COUNT(order_id) DESC
+    LIMIT 1
+);
