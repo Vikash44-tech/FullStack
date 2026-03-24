@@ -1,0 +1,40 @@
+task-2
+
+CREATE DATABASE dashboard_db;
+
+USE dashboard_db;
+
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    dob DATE,
+    department VARCHAR(50),
+    phone VARCHAR(15)
+);
+
+INSERT INTO students (name, email, dob, department, phone) VALUES
+('Ashok', 'ashok@gmail.com', '2003-05-10', 'CSE', '9876543210'),
+('Rahul', 'rahul@gmail.com', '2002-08-15', 'ECE', '9123456780'),
+('Priya', 'priya@gmail.com', '2003-01-20', 'IT', '9012345678'),
+('Kiran', 'kiran@gmail.com', '2003-03-12', 'CSE', '9988776655'),
+('Anitha', 'anitha@gmail.com', '2002-11-25', 'ECE', '9871234560');
+
+SELECT * FROM students;
+
+SELECT * FROM students
+ORDER BY name ASC;
+
+SELECT * FROM students
+ORDER BY dob ASC;
+
+SELECT * FROM students
+WHERE department = 'CSE';
+
+SELECT department, COUNT(*) AS total_students
+FROM students
+GROUP BY department;
+
+SELECT COUNT(*) AS total_cse_students
+FROM students
+WHERE department = 'CSE';
