@@ -1,0 +1,76 @@
+PROGRAM:
+   STEP 1: CREATE SPRING BOOT PROJECT (IN SPRING TOOL SUITE)
+File → New → Spring Starter Project
+Project Name : JdbcDemo
+Type         : Maven
+Java Version : 17
+Packaging    : Jar
+Group        : com.example
+Artifact     : jdbcdemo
+
+ADD DEPENDENCIES:
+ Spring Web
+ Spring Data JPA
+ MySQL Driver
+ Spring Boot DevTools
+
+Click Finish
+   STEP 2: DATABASE (RUN IN MYSQL)
+CREATE DATABASE studentdb;
+USE studentdb;
+
+CREATE TABLE students (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100),
+    age INT,
+    department VARCHAR(50)
+);
+   STEP 3: CONFIGURE JDBC CONNECTION (application.properties)
+Go to:
+src/main/resources/application.properties
+
+Paste this:
+
+spring.datasource.url=jdbc:mysql://localhost:3306/studentdb
+spring.datasource.username=root
+spring.datasource.password=root
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+   STEP 4: CONFIGURE DATA SOURCE IN DATA SOURCE EXPLORER
+Open:
+Window → Show View → Data Source Explorer
+
+Right Click → Database Connections → New
+
+Select:
+MySQL → Next
+
+Driver:
+If driver not available → Click Download Driver
+
+Fill Details:
+
+Connection Name : MySQL-StudentDB
+Host            : localhost
+Port            : 3306
+Database        : studentdb
+User            : root
+Password        : root
+
+Click Test Connection → Finish
+
+Now you can see tables inside Data Source Explorer
+   STEP 5: MAIN CLASS (AUTO CREATED)
+package com.example.jdbcdemo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class JdbcDemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(JdbcDemoApplication.class, args);
+    }
+}
