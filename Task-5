@@ -1,0 +1,41 @@
+task-5 transaction based-payment simulation
+
+CREATE DATABASE payment_system;
+
+USE payment_system;
+
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    balance DECIMAL(10,2)
+);
+
+CREATE TABLE merchants (
+    merchant_id INT AUTO_INCREMENT PRIMARY KEY,
+    merchant_name VARCHAR(100),
+    balance DECIMAL(10,2)
+);
+
+INSERT INTO users (name, balance) VALUES
+('Ashok', 10000),
+('Rahul', 5000);
+
+INSERT INTO merchants (merchant_name, balance) VALUES
+('Amazon', 20000),
+('Flipkart', 15000);
+START TRANSACTION;
+
+UPDATE users
+SET balance = balance - 2000
+WHERE user_id = 1;
+
+UPDATE merchants
+SET balance = balance + 2000
+WHERE merchant_id = 1;
+
+COMMIT;
+
+ROLLBACK;
+
+SELECT * FROM users;
+SELECT * FROM merchants;
