@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Feedback Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    .form-field {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, textarea {
+      width: 300px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    input:hover, textarea:hover {
+      background-color: #f0f8ff; /* highlight on hover */
+    }
+    #confirmation {
+      margin-top: 20px;
+      color: green;
+      font-weight: bold;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Customer Feedback Form</h2>
+  <form id="feedbackForm">
+    <div class="form-field">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required>
+    </div>
+    <div class="form-field">
+      <label for="email">Email:</label>
+      <input type="text" id="email" required>
+    </div>
+    <div class="form-field">
+      <label for="feedback">Feedback:</label>
+      <textarea id="feedback" rows="4" required></textarea>
+    </div>
+    <button type="submit" id="submitBtn">Submit</button>
+  </form>
+  <div id="confirmation">✅ Thank you! Your feedback has been submitted.</div>
+
+  <script>
+    // Reusable validation functions
+    function validateNotEmpty(field) {
+      return field.value.trim() !== "";
+    }
+
+    function validateEmail(field) {
+      const pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+      return pattern.test(field.value.trim());
+    }
+
+    // Attach keypress validation
+    document.getElementById("name").addEventListener("keypress", function() {
+      if (!validateNotEmpty(this)) {
+        this.style.borderColor = "red";
+      } else {
+        this.style.borderColor = "#ccc";
+      }
+    });
+
+    document.getElementById("email").addEventListener("keypress", function() {
+      if (!validateEmail(this)) {
+        this.style.borderColor = "red";
+      } else {
+        this.style.borderColor = "#ccc";
+      }
+    });
+
+    document.getElementById("feedback").addEventListener("keypress", function() {
+      if (!validateNotEmpty(this)) {
+        this.style.borderColor = "red";
+      } else {
+        this.style.borderColor = "#ccc";
+      }
+    });
+
+    // Double-click submit confirmation
+    document.getElementById("submitBtn").addEventListener("dblclick", function(event) {
+      event.preventDefault(); // prevent normal form submission
+      const nameField = document.getElementById("name");
+      const emailField = document.getElementById("email");
+      const feedbackField = document.getElementById("feedback");
+
+      if (validateNotEmpty(nameField) && validateEmail(emailField) && validateNotEmpty(feedbackField)) {
+        document.getElementById("confirmation").style.display = "block";
+      } else {
+        alert("Please fill all fields correctly before submitting.");
+      }
+    });
+  </script>
+</body>
+</html>
