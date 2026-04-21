@@ -1,0 +1,14 @@
+@WebMvcTest(ProductController.class)
+class ProductControllerTest {
+    @MockBean
+    private ProductService productService;
+
+    @Test
+    void testGetProductById() throws Exception {
+        when(productService.getById(1L)).thenReturn(new Product(1L, "Laptop", 999.99));
+        
+        mockMvc.perform(get("/products/1"))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.name").value("Laptop"));
+    }
+}
