@@ -1,0 +1,15 @@
+@Service
+public class OrderService {
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
+    public Product getProductFromCatalog(Long productId) {
+        List<ServiceInstance> instances = discoveryClient.getInstances("product-service");
+        if (instances.isEmpty()) throw new RuntimeException("Product service unavailable");
+        String url = instances.get(0).getUri().toString() + "/products/" + productId;
+        return restTemplate.getForObject(url, Product.class);
+    }
+}
